@@ -1,8 +1,8 @@
 [Setup]
-AppName=Traccar
-AppVersion=5.5
-DefaultDirName={pf}\Traccar
-OutputBaseFilename=traccar-setup
+AppName=EFCC Telematics Core
+AppVersion=1.0
+DefaultDirName={pf}\EFCC Telematics
+OutputBaseFilename=efcc-telematics-setup
 ArchitecturesInstallIn64BitMode=x64
 
 [Dirs]

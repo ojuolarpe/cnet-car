@@ -57,6 +57,7 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("reports")
 @Produces(MediaType.APPLICATION_JSON)
@@ -131,7 +132,7 @@ public class ReportResource extends BaseResource {
             @QueryParam("to") Date to) throws StorageException {
         permissionsService.checkRestriction(getUserId(), UserRestrictions::getDisableReports);
         LogAction.logReport(getUserId(), "route", from, to, deviceIds, groupIds);
-        return routeReportProvider.getObjects(getUserId(), deviceIds, groupIds, from, to);
+        return routeReportProvider.getObjects(getUserId(), deviceIds, groupIds, from, to).stream().limit(4000L).collect(Collectors.toList());
     }
 
     @Path("route")

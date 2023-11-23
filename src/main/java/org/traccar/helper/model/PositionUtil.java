@@ -61,7 +61,7 @@ public final class PositionUtil {
                 new Condition.And(
                         new Condition.Equals("deviceId", deviceId),
                         new Condition.Between("fixTime", "from", from, "to", to)),
-                new Order("fixTime")));
+                new Order("fixTime"))).stream().limit(40000L).collect(Collectors.toList());
     }
 
     public static List<Position> getLatestPositions(Storage storage, long userId) throws StorageException {

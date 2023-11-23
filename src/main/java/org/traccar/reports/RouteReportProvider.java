@@ -69,34 +69,39 @@ public class RouteReportProvider {
     public void getExcel(OutputStream outputStream,
             long userId, Collection<Long> deviceIds, Collection<Long> groupIds,
             Date from, Date to) throws StorageException, IOException {
-        reportUtils.checkPeriodLimit(from, to);
+        try {
+            reportUtils.checkPeriodLimit(from, to);
 
-        ArrayList<DeviceReportSection> devicesRoutes = new ArrayList<>();
-        ArrayList<String> sheetNames = new ArrayList<>();
-        for (Device device: reportUtils.getAccessibleDevices(userId, deviceIds, groupIds)) {
-            var positions = PositionUtil.getPositions(storage, device.getId(), from, to);
-            DeviceReportSection deviceRoutes = new DeviceReportSection();
-            deviceRoutes.setDeviceName(device.getName());
-            sheetNames.add(WorkbookUtil.createSafeSheetName(deviceRoutes.getDeviceName()));
-            if (device.getGroupId() > 0) {
-                Group group = storage.getObject(Group.class, new Request(
-                        new Columns.All(), new Condition.Equals("id", device.getGroupId())));
-                if (group != null) {
-                    deviceRoutes.setGroupName(group.getName());
+            ArrayList<DeviceReportSection> devicesRoutes = new ArrayList<>();
+            ArrayList<String> sheetNames = new ArrayList<>();
+            for (Device device : reportUtils.getAccessibleDevices(userId, deviceIds, groupIds)) {
+                var positions = PositionUtil.getPositions(storage, device.getId(), from, to);
+                System.out.println("Total size of records: "+positions.size());
+                DeviceReportSection deviceRoutes = new DeviceReportSection();
+                deviceRoutes.setDeviceName(device.getName());
+                sheetNames.add(WorkbookUtil.createSafeSheetName(deviceRoutes.getDeviceName()));
+                if (device.getGroupId() > 0) {
+                    Group group = storage.getObject(Group.class, new Request(
+                            new Columns.All(), new Condition.Equals("id", device.getGroupId())));
+                    if (group != null) {
+                        deviceRoutes.setGroupName(group.getName());
+                    }
                 }
+                deviceRoutes.setObjects(positions);
+                devicesRoutes.add(deviceRoutes);
             }
-            deviceRoutes.setObjects(positions);
-            devicesRoutes.add(deviceRoutes);
-        }
 
-        File file = Paths.get(config.getString(Keys.TEMPLATES_ROOT), "export", "route.xlsx").toFile();
-        try (InputStream inputStream = new FileInputStream(file)) {
-            var context = reportUtils.initializeContext(userId);
-            context.putVar("devices", devicesRoutes);
-            context.putVar("sheetNames", sheetNames);
-            context.putVar("from", from);
-            context.putVar("to", to);
-            reportUtils.processTemplateWithSheets(inputStream, outputStream, context);
+            File file = Paths.get(config.getString(Keys.TEMPLATES_ROOT), "export", "route.xlsx").toFile();
+            try (InputStream inputStream = new FileInputStream(file)) {
+                var context = reportUtils.initializeContext(userId);
+                context.putVar("devices", devicesRoutes);
+                context.putVar("sheetNames", sheetNames);
+                context.putVar("from", from);
+                context.putVar("to", to);
+                reportUtils.processTemplateWithSheets(inputStream, outputStream, context);
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 }

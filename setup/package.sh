@@ -124,7 +124,7 @@ package_windows () {
   rm -rf jdk-*
   wine app/ISCC.exe traccar.iss >/dev/null
   rm -rf out/jre
-  zip -q -j traccar-windows-64-$VERSION.zip Output/traccar-setup.exe README.txt
+  zip -q -j efcc-telematics-windows-64-$VERSION.zip Output/efcc-telematics-setup.exe README.txt
   rm -r Output
   ok "Created Windows 64 installer"
 }
