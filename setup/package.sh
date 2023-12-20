@@ -90,7 +90,7 @@ prepare () {
   cp -r ../traccar-web/web/* out/legacy
   cp -r ../traccar-web/modern/build/* out/modern
   cp default.xml out/conf
-  cp traccar.xml out/conf
+  cp config.xml out/conf
 
   if [ $PLATFORM = "all" -o $PLATFORM = "windows-64" ]; then
 	innoextract i*setup-*.exe >/dev/null
